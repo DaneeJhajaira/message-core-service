@@ -89,6 +89,7 @@ export class RegisterIncomingMessageUseCase {
       mediaMimeType: event.content.media?.mimeType ?? null,
       mediaStorageBucket: null,
       mediaStorageObjectKey: null,
+      mediaErrorMessage: null,
       status: 'received',
       messageTimestamp: messageDate,
       rawPayload: event.rawPayload,

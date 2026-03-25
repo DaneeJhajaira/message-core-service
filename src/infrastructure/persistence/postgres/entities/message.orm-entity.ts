@@ -47,6 +47,9 @@ export class MessageOrmEntity {
   @Column({ name: 'media_storage_object_key', type: 'varchar', length: 500, nullable: true })
   mediaStorageObjectKey: string | null;
 
+  @Column({ name: 'media_error_message', type: 'text', nullable: true })
+  mediaErrorMessage: string | null;
+
   @Column({ type: 'varchar', length: 50, default: 'received' })
   status: string;
 

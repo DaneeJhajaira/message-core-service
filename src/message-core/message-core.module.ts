@@ -7,7 +7,8 @@ import { ConversationOrmEntity } from '../infrastructure/persistence/postgres/en
 import { MessageOrmEntity } from '../infrastructure/persistence/postgres/entities/message.orm-entity';
 import { UpdateMessageMediaFromProcessedEventUseCase } from 'src/app/use-cases/update-message-media-from-processed-event.use-case';
 import { MediaAssetProcessedConsumer } from 'src/infrastructure/messaging/kafka/consumers/media-asset-processed.consumer';
-
+import { UpdateMessageMediaFromFailedEventUseCase } from 'src/app/use-cases/update-message-media-from-failed-event.use-case';
+import { MediaAssetFailedConsumer } from 'src/infrastructure/messaging/kafka/consumers/media-asset-failed.consumer';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -16,7 +17,7 @@ import { MediaAssetProcessedConsumer } from 'src/infrastructure/messaging/kafka/
       MessageOrmEntity,
     ]),
   ],
-  controllers: [MessageReceivedConsumer,  MediaAssetProcessedConsumer,],
-  providers: [RegisterIncomingMessageUseCase, UpdateMessageMediaFromProcessedEventUseCase,],
+  controllers: [MessageReceivedConsumer,  MediaAssetProcessedConsumer, MediaAssetFailedConsumer,],
+  providers: [RegisterIncomingMessageUseCase, UpdateMessageMediaFromProcessedEventUseCase,UpdateMessageMediaFromFailedEventUseCase,],
 })
 export class MessageCoreModule {}
