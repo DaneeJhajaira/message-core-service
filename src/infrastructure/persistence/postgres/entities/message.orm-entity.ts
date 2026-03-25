@@ -32,6 +32,21 @@ export class MessageOrmEntity {
   @Column({ name: 'provider_media_id', type: 'varchar', length: 255, nullable: true })
   providerMediaId: string | null;
 
+  @Column({ name: 'media_status', type: 'varchar', length: 50, nullable: true })
+  mediaStatus: string | null;
+
+  @Column({ name: 'media_url', type: 'text', nullable: true })
+  mediaUrl: string | null;
+
+  @Column({ name: 'media_mime_type', type: 'varchar', length: 150, nullable: true })
+  mediaMimeType: string | null;
+
+  @Column({ name: 'media_storage_bucket', type: 'varchar', length: 255, nullable: true })
+  mediaStorageBucket: string | null;
+
+  @Column({ name: 'media_storage_object_key', type: 'varchar', length: 500, nullable: true })
+  mediaStorageObjectKey: string | null;
+
   @Column({ type: 'varchar', length: 50, default: 'received' })
   status: string;
 
