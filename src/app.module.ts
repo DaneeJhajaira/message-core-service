@@ -22,15 +22,9 @@ import { MessageOrmEntity } from './infrastructure/persistence/postgres/entities
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         entities: [ContactOrmEntity, ConversationOrmEntity, MessageOrmEntity],
-        synchronize: true,
+        synchronize: false,
       }),
     }),
-
-    TypeOrmModule.forFeature([
-      ContactOrmEntity,
-      ConversationOrmEntity,
-      MessageOrmEntity,
-    ]),
 
     MessageCoreModule,
   ],
