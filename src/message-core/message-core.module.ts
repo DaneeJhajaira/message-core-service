@@ -9,6 +9,11 @@ import { UpdateMessageMediaFromProcessedEventUseCase } from 'src/app/use-cases/u
 import { MediaAssetProcessedConsumer } from 'src/infrastructure/messaging/kafka/consumers/media-asset-processed.consumer';
 import { UpdateMessageMediaFromFailedEventUseCase } from 'src/app/use-cases/update-message-media-from-failed-event.use-case';
 import { MediaAssetFailedConsumer } from 'src/infrastructure/messaging/kafka/consumers/media-asset-failed.consumer';
+import { RegisterFailedOutboundMessageUseCase } from 'src/app/use-cases/register-failed-outbound-message.use-case';
+import { RegisterSentOutboundMessageUseCase } from 'src/app/use-cases/register-sent-outbound-message.use-case';
+import { WhatsappMessageFailedConsumer } from 'src/infrastructure/messaging/kafka/consumers/whatsapp-message-failed.consumer';
+import { WhatsappMessageSentConsumer } from 'src/infrastructure/messaging/kafka/consumers/whatsapp-message-sent.consumer';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -17,7 +22,7 @@ import { MediaAssetFailedConsumer } from 'src/infrastructure/messaging/kafka/con
       MessageOrmEntity,
     ]),
   ],
-  controllers: [MessageReceivedConsumer,  MediaAssetProcessedConsumer, MediaAssetFailedConsumer,],
-  providers: [RegisterIncomingMessageUseCase, UpdateMessageMediaFromProcessedEventUseCase,UpdateMessageMediaFromFailedEventUseCase,],
+  controllers: [MessageReceivedConsumer,  MediaAssetProcessedConsumer, MediaAssetFailedConsumer, WhatsappMessageSentConsumer, WhatsappMessageFailedConsumer],
+  providers: [RegisterIncomingMessageUseCase, UpdateMessageMediaFromProcessedEventUseCase,UpdateMessageMediaFromFailedEventUseCase, RegisterSentOutboundMessageUseCase, RegisterFailedOutboundMessageUseCase,],
 })
 export class MessageCoreModule {}

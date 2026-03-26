@@ -59,6 +59,21 @@ export class MessageOrmEntity {
   @Column({ name: 'raw_payload', type: 'jsonb' })
   rawPayload: Record<string, any>;
 
+  @Column({ name: 'original_event_id', type: 'varchar', length: 255, nullable: true })
+  originalEventId: string | null;
+
+  @Column({ name: 'provider_name', type: 'varchar', length: 50, nullable: true })
+  providerName: string | null;
+
+  @Column({ name: 'provider_phone_number_id', type: 'varchar', length: 255, nullable: true })
+  providerPhoneNumberId: string | null;
+
+  @Column({ name: 'agent_id', type: 'varchar', length: 100, nullable: true })
+  agentId: string | null;
+
+  @Column({ name: 'error_message', type: 'text', nullable: true })
+  errorMessage: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

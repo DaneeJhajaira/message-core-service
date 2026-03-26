@@ -1,0 +1,108 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ContactOrmEntity } from '../../infrastructure/persistence/postgres/entities/contact.orm-entity';
+import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres/entities/conversation.orm-entity';
+import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
+import { WhatsappMessageFailedEvent } from '../../shared/contracts/whatsapp-message-failed.contract';
+
+@Injectable()
+export class RegisterFailedOutboundMessageUseCase {
+  private readonly logger = new Logger(RegisterFailedOutboundMessageUseCase.name);
+
+  constructor(
+    @InjectRepository(ContactOrmEntity)
+    private readonly contactRepository: Repository<ContactOrmEntity>,
+
+    @InjectRepository(ConversationOrmEntity)
+    private readonly conversationRepository: Repository<ConversationOrmEntity>,
+
+    @InjectRepository(MessageOrmEntity)
+    private readonly messageRepository: Repository<MessageOrmEntity>,
+  ) {}
+
+  async execute(event: WhatsappMessageFailedEvent): Promise<void> {
+    let contact = await this.contactRepository.findOne({
+      where: { waId: event.recipient.waId },
+    });
+
+    const messageDate = new Date(event.occurredAt);
+
+    if (!contact) {
+      contact = this.contactRepository.create({
+        waId: event.recipient.waId,
+        phone: event.recipient.waId,
+        name: null,
+        lastMessageAt: messageDate,
+      });
+
+      contact = await this.contactRepository.save(contact);
+    } else {
+      contact.lastMessageAt = messageDate;
+      contact = await this.contactRepository.save(contact);
+    }
+
+    let conversation = await this.conversationRepository.findOne({
+      where: { externalId: event.recipient.waId },
+    });
+
+    if (!conversation) {
+      conversation = this.conversationRepository.create({
+        contactId: contact.id,
+        externalId: event.recipient.waId,
+        status: 'open',
+        lastMessageAt: messageDate,
+      });
+
+      conversation = await this.conversationRepository.save(conversation);
+    } else {
+      conversation.contactId = contact.id;
+      conversation.lastMessageAt = messageDate;
+      conversation = await this.conversationRepository.save(conversation);
+    }
+
+    let message = await this.messageRepository.findOne({
+      where: { originalEventId: event.originalEventId },
+    });
+
+    if (!message) {
+      message = this.messageRepository.create({
+        conversationId: conversation.id,
+        contactId: contact.id,
+        messageId: `failed:${event.originalEventId}`,
+        originalEventId: event.originalEventId,
+        direction: 'outbound',
+        messageType: event.message.type,
+        body: null,
+        providerName: 'meta',
+        providerPhoneNumberId: null,
+        agentId: event.metadata?.agentId ?? null,
+        providerMediaId: null,
+        mediaStatus: null,
+        mediaUrl: null,
+        mediaMimeType: null,
+        mediaStorageBucket: null,
+        mediaStorageObjectKey: null,
+        mediaErrorMessage: null,
+        errorMessage: event.error.message,
+        status: event.message.status,
+        messageTimestamp: messageDate,
+        rawPayload: event as unknown as Record<string, any>,
+      });
+    } else {
+      message.direction = 'outbound';
+      message.messageType = event.message.type;
+      message.agentId = event.metadata?.agentId ?? null;
+      message.errorMessage = event.error.message;
+      message.status = event.message.status;
+      message.messageTimestamp = messageDate;
+      message.rawPayload = event as unknown as Record<string, any>;
+    }
+
+    await this.messageRepository.save(message);
+
+    this.logger.log(
+      `Mensaje outbound registrado/actualizado como failed: originalEventId=${event.originalEventId}`,
+    );
+  }
+}
