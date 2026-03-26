@@ -62,7 +62,7 @@ export class RegisterSentOutboundMessageUseCase {
     }
 
     let message = await this.messageRepository.findOne({
-      where: { messageId: event.provider.wamid },
+      where: { originalEventId: event.originalEventId },
     });
 
     if (!message) {
@@ -90,12 +90,13 @@ export class RegisterSentOutboundMessageUseCase {
         rawPayload: event as unknown as Record<string, any>,
       });
     } else {
-      message.originalEventId = event.originalEventId;
+      message.messageId = event.provider.wamid;
       message.direction = 'outbound';
       message.messageType = event.message.type;
       message.providerName = event.provider.name;
       message.providerPhoneNumberId = event.provider.phoneNumberId;
       message.agentId = event.metadata?.agentId ?? null;
+      message.errorMessage = null;
       message.status = event.message.status;
       message.messageTimestamp = messageDate;
       message.rawPayload = event as unknown as Record<string, any>;

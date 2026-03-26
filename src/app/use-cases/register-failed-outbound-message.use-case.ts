@@ -90,6 +90,7 @@ export class RegisterFailedOutboundMessageUseCase {
         rawPayload: event as unknown as Record<string, any>,
       });
     } else {
+      message.messageId = `failed:${event.originalEventId}`;
       message.direction = 'outbound';
       message.messageType = event.message.type;
       message.agentId = event.metadata?.agentId ?? null;
