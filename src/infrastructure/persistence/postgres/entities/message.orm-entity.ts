@@ -77,6 +77,18 @@ export class MessageOrmEntity {
   @Column({ name: 'error_message', type: 'text', nullable: true })
   errorMessage: string | null;
 
+  @Column({ name: 'delivered_at', type: 'timestamp', nullable: true })
+  deliveredAt: Date | null;
+
+  @Column({ name: 'read_at', type: 'timestamp', nullable: true })
+  readAt: Date | null;
+
+  @Column({ name: 'status_error_code', type: 'int', nullable: true })
+  statusErrorCode: number | null;
+
+  @Column({ name: 'status_error_title', type: 'varchar', length: 255, nullable: true })
+  statusErrorTitle: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

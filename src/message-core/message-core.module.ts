@@ -15,6 +15,8 @@ import { WhatsappMessageFailedConsumer } from 'src/infrastructure/messaging/kafk
 import { WhatsappMessageSentConsumer } from 'src/infrastructure/messaging/kafka/consumers/whatsapp-message-sent.consumer';
 import { WhatsappMessageSendConsumer } from 'src/infrastructure/messaging/kafka/consumers/whatsapp-message-send.consumer';
 import { RegisterPendingOutboundMessageUseCase } from 'src/app/use-cases/register-pending-outbound-message.use-case';
+import { WhatsappMessageStatusConsumer } from 'src/infrastructure/messaging/kafka/consumers/whatsapp-message-status.consumer';
+import { UpdateMessageFromStatusEventUseCase } from 'src/app/use-cases/update-message-from-status-event.use-case';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { RegisterPendingOutboundMessageUseCase } from 'src/app/use-cases/registe
       MessageOrmEntity,
     ]),
   ],
-  controllers: [MessageReceivedConsumer,  MediaAssetProcessedConsumer, MediaAssetFailedConsumer, WhatsappMessageSentConsumer, WhatsappMessageFailedConsumer, WhatsappMessageSendConsumer,],
-  providers: [RegisterIncomingMessageUseCase, UpdateMessageMediaFromProcessedEventUseCase,UpdateMessageMediaFromFailedEventUseCase, RegisterSentOutboundMessageUseCase, RegisterFailedOutboundMessageUseCase, RegisterPendingOutboundMessageUseCase,],
+  controllers: [MessageReceivedConsumer,  MediaAssetProcessedConsumer, MediaAssetFailedConsumer, WhatsappMessageSentConsumer, WhatsappMessageFailedConsumer, WhatsappMessageSendConsumer, WhatsappMessageStatusConsumer,],
+  providers: [RegisterIncomingMessageUseCase, UpdateMessageMediaFromProcessedEventUseCase,UpdateMessageMediaFromFailedEventUseCase, RegisterSentOutboundMessageUseCase, RegisterFailedOutboundMessageUseCase, RegisterPendingOutboundMessageUseCase, UpdateMessageFromStatusEventUseCase,],
 })
 export class MessageCoreModule {}
