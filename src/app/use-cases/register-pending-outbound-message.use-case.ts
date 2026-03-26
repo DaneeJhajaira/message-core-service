@@ -93,6 +93,7 @@ export class RegisterPendingOutboundMessageUseCase {
       mediaMimeType: null,
       mediaStorageBucket: null,
       mediaStorageObjectKey: null,
+      mediaAssetId: event.content.media?.mediaAssetId ?? null,
       mediaErrorMessage: null,
       errorMessage: null,
       status: 'pending',
