@@ -5,6 +5,8 @@ import { ContactOrmEntity } from '../../infrastructure/persistence/postgres/enti
 import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres/entities/conversation.orm-entity';
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
 import { WhatsappMessageSentEvent } from '../../shared/contracts/whatsapp-message-sent.contract';
+import { ChatEventsPublisher } from 'src/message-core/services/chat-events.publisher';
+import { toChatMessageUpdatedEvent } from 'src/message-core/mappers/chat-events.mapper';
 
 @Injectable()
 export class RegisterSentOutboundMessageUseCase {
@@ -19,6 +21,8 @@ export class RegisterSentOutboundMessageUseCase {
 
     @InjectRepository(MessageOrmEntity)
     private readonly messageRepository: Repository<MessageOrmEntity>,
+
+    private readonly chatEventsPublisher: ChatEventsPublisher,
   ) {}
 
   async execute(event: WhatsappMessageSentEvent): Promise<void> {
@@ -103,6 +107,14 @@ export class RegisterSentOutboundMessageUseCase {
     }
 
     await this.messageRepository.save(message);
+
+    await this.chatEventsPublisher.publishMessageUpdated(
+      toChatMessageUpdatedEvent({
+        conversation,
+        contact,
+        message,
+      }),
+    );
 
     this.logger.log(
       `Mensaje outbound registrado/actualizado como sent: wamid=${event.provider.wamid}`,

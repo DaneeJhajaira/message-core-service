@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
 import { WhatsappMessageStatusEvent } from '../../shared/contracts/whatsapp-message-status.contract';
+import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres/entities/conversation.orm-entity';
+import { ContactOrmEntity } from '../../infrastructure/persistence/postgres/entities/contact.orm-entity';
+import { ChatEventsPublisher } from '../../message-core/services/chat-events.publisher';
+import { toChatMessageUpdatedEvent } from '../../message-core/mappers/chat-events.mapper';
 
 @Injectable()
 export class UpdateMessageFromStatusEventUseCase {
@@ -11,6 +15,14 @@ export class UpdateMessageFromStatusEventUseCase {
   constructor(
     @InjectRepository(MessageOrmEntity)
     private readonly messageRepository: Repository<MessageOrmEntity>,
+
+    @InjectRepository(ConversationOrmEntity)
+    private readonly conversationRepository: Repository<ConversationOrmEntity>,
+
+    @InjectRepository(ContactOrmEntity)
+    private readonly contactRepository: Repository<ContactOrmEntity>,
+
+    private readonly chatEventsPublisher: ChatEventsPublisher,
   ) {}
 
   async execute(event: WhatsappMessageStatusEvent): Promise<void> {
@@ -43,6 +55,24 @@ export class UpdateMessageFromStatusEventUseCase {
     }
 
     await this.messageRepository.save(message);
+
+    const conversation = await this.conversationRepository.findOne({
+      where: { id: message.conversationId },
+    });
+
+    const contact = await this.contactRepository.findOne({
+      where: { id: message.contactId },
+    });
+
+    if (conversation && contact) {
+      await this.chatEventsPublisher.publishMessageUpdated(
+        toChatMessageUpdatedEvent({
+          conversation,
+          contact,
+          message,
+        }),
+      );
+    }
 
     this.logger.log(
       `Estado actualizado para wamid=${message.messageId} status=${message.status}`,

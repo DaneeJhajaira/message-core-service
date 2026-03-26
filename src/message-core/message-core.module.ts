@@ -20,6 +20,7 @@ import { UpdateMessageFromStatusEventUseCase } from 'src/app/use-cases/update-me
 import { ConversationsController } from './controllers/conversations.controller';
 import { GetConversationsUseCase } from '../app/use-cases/get-conversations.use-case';
 import { GetConversationMessagesUseCase } from '../app/use-cases/get-conversation-messages.use-case';
+import { ChatEventsPublisher } from './services/chat-events.publisher';
 
 @Module({
   imports: [
@@ -30,6 +31,6 @@ import { GetConversationMessagesUseCase } from '../app/use-cases/get-conversatio
     ]),
   ],
   controllers: [MessageReceivedConsumer,  MediaAssetProcessedConsumer, MediaAssetFailedConsumer, WhatsappMessageSentConsumer, WhatsappMessageFailedConsumer, WhatsappMessageSendConsumer, WhatsappMessageStatusConsumer, ConversationsController,],
-  providers: [RegisterIncomingMessageUseCase, UpdateMessageMediaFromProcessedEventUseCase,UpdateMessageMediaFromFailedEventUseCase, RegisterSentOutboundMessageUseCase, RegisterFailedOutboundMessageUseCase, RegisterPendingOutboundMessageUseCase, UpdateMessageFromStatusEventUseCase, GetConversationsUseCase, GetConversationMessagesUseCase,],
+  providers: [RegisterIncomingMessageUseCase, UpdateMessageMediaFromProcessedEventUseCase,UpdateMessageMediaFromFailedEventUseCase, RegisterSentOutboundMessageUseCase, RegisterFailedOutboundMessageUseCase, RegisterPendingOutboundMessageUseCase, UpdateMessageFromStatusEventUseCase, GetConversationsUseCase, GetConversationMessagesUseCase, ChatEventsPublisher,],
 })
 export class MessageCoreModule {}

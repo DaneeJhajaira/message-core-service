@@ -5,6 +5,8 @@ import { ContactOrmEntity } from '../../infrastructure/persistence/postgres/enti
 import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres/entities/conversation.orm-entity';
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
 import { WhatsappMessageFailedEvent } from '../../shared/contracts/whatsapp-message-failed.contract';
+import { ChatEventsPublisher } from '../../message-core/services/chat-events.publisher';
+import { toChatMessageUpdatedEvent } from '../../message-core/mappers/chat-events.mapper';
 
 @Injectable()
 export class RegisterFailedOutboundMessageUseCase {
@@ -19,6 +21,8 @@ export class RegisterFailedOutboundMessageUseCase {
 
     @InjectRepository(MessageOrmEntity)
     private readonly messageRepository: Repository<MessageOrmEntity>,
+
+    private readonly chatEventsPublisher: ChatEventsPublisher,
   ) {}
 
   async execute(event: WhatsappMessageFailedEvent): Promise<void> {
@@ -101,6 +105,14 @@ export class RegisterFailedOutboundMessageUseCase {
     }
 
     await this.messageRepository.save(message);
+
+    await this.chatEventsPublisher.publishMessageUpdated(
+      toChatMessageUpdatedEvent({
+        conversation,
+        contact,
+        message,
+      }),
+    );
 
     this.logger.log(
       `Mensaje outbound registrado/actualizado como failed: originalEventId=${event.originalEventId}`,

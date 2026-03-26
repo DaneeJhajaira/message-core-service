@@ -3,6 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
 import { MediaAssetFailedEvent } from '../../shared/contracts/media-asset-failed.contract';
+import { ContactOrmEntity } from '../../infrastructure/persistence/postgres/entities/contact.orm-entity';
+import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres/entities/conversation.orm-entity';
+import { ChatEventsPublisher } from '../../message-core/services/chat-events.publisher';
+import { toChatMessageUpdatedEvent } from '../../message-core/mappers/chat-events.mapper';
 
 @Injectable()
 export class UpdateMessageMediaFromFailedEventUseCase {
@@ -13,6 +17,14 @@ export class UpdateMessageMediaFromFailedEventUseCase {
   constructor(
     @InjectRepository(MessageOrmEntity)
     private readonly messageRepository: Repository<MessageOrmEntity>,
+
+    @InjectRepository(ConversationOrmEntity)
+    private readonly conversationRepository: Repository<ConversationOrmEntity>,
+
+    @InjectRepository(ContactOrmEntity)
+    private readonly contactRepository: Repository<ContactOrmEntity>,
+
+    private readonly chatEventsPublisher: ChatEventsPublisher,
   ) {}
 
   async execute(event: MediaAssetFailedEvent): Promise<void> {
@@ -35,6 +47,24 @@ export class UpdateMessageMediaFromFailedEventUseCase {
     message.mediaStorageObjectKey = null;
 
     await this.messageRepository.save(message);
+
+    const conversation = await this.conversationRepository.findOne({
+      where: { id: message.conversationId },
+    });
+
+    const contact = await this.contactRepository.findOne({
+      where: { id: message.contactId },
+    });
+
+    if (conversation && contact) {
+      await this.chatEventsPublisher.publishMessageUpdated(
+        toChatMessageUpdatedEvent({
+          conversation,
+          contact,
+          message,
+        }),
+      );
+    }
 
     this.logger.log(
       `Mensaje actualizado con media fallida: messageId=${message.messageId}`,

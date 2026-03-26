@@ -5,6 +5,7 @@ import { MessageCoreModule } from './message-core/message-core.module';
 import { ContactOrmEntity } from './infrastructure/persistence/postgres/entities/contact.orm-entity';
 import { ConversationOrmEntity } from './infrastructure/persistence/postgres/entities/conversation.orm-entity';
 import { MessageOrmEntity } from './infrastructure/persistence/postgres/entities/message.orm-entity';
+import { KafkaModule } from './config/kafka.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { MessageOrmEntity } from './infrastructure/persistence/postgres/entities
     }),
 
     MessageCoreModule,
+    KafkaModule,
   ],
 })
 export class AppModule {}
