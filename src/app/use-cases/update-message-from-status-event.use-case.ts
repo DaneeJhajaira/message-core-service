@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
@@ -33,9 +33,10 @@ export class UpdateMessageFromStatusEventUseCase {
     });
 
     if (!message) {
-      throw new NotFoundException(
-        `No existe mensaje con wamid=${event.message.messageId}`,
+      this.logger.warn(
+        `Mensaje no encontrado, ignorando status event: wamid=${event.message.messageId} status=${event.message.status}`,
       );
+      return;
     }
 
     message.status = event.message.status;
