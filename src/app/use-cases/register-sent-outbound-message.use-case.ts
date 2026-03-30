@@ -56,12 +56,18 @@ export class RegisterSentOutboundMessageUseCase {
         externalId: event.recipient.waId,
         status: 'open',
         lastMessageAt: messageDate,
+        lastMessageId: event.provider.wamid,
+        lastMessageType: event.message.type,
+        lastMessageDirection: 'outbound',
       });
 
       conversation = await this.conversationRepository.save(conversation);
     } else {
       conversation.contactId = contact.id;
       conversation.lastMessageAt = messageDate;
+      conversation.lastMessageId = event.provider.wamid;
+      conversation.lastMessageType = event.message.type;
+      conversation.lastMessageDirection = 'outbound';
       conversation = await this.conversationRepository.save(conversation);
     }
 

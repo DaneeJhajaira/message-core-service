@@ -35,6 +35,21 @@ export class ConversationOrmEntity {
 
   @Column({ name: 'last_message_at', type: 'timestamp', nullable: true })
   lastMessageAt: Date | null;
+  
+  @Column({ name: 'last_message_id', type: 'varchar', length: 255, nullable: true })
+  lastMessageId!: string | null;
+
+  @Column({ name: 'last_message_preview', type: 'varchar', length: 500, nullable: true })
+  lastMessagePreview!: string | null;
+
+  @Column({ name: 'last_message_type', type: 'varchar', length: 50, nullable: true })
+  lastMessageType!: string | null;
+
+  @Column({ name: 'last_message_direction', type: 'varchar', length: 20, nullable: true })
+  lastMessageDirection!: string | null;
+
+  @Column({ name: 'unread_count', type: 'int', default: 0 })
+  unreadCount!: number;
 
   @OneToMany(() => MessageOrmEntity, (message) => message.conversation)
   messages: MessageOrmEntity[];

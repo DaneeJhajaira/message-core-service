@@ -58,12 +58,18 @@ export class RegisterFailedOutboundMessageUseCase {
         externalId: event.recipient.waId,
         status: 'open',
         lastMessageAt: messageDate,
+        lastMessageId: `failed:${event.originalEventId}`,
+        lastMessageType: event.message.type,
+        lastMessageDirection: 'outbound',
       });
 
       conversation = await this.conversationRepository.save(conversation);
     } else {
       conversation.contactId = contact.id;
       conversation.lastMessageAt = messageDate;
+      conversation.lastMessageId = `failed:${event.originalEventId}`;
+      conversation.lastMessageType = event.message.type;
+      conversation.lastMessageDirection = 'outbound';
       conversation = await this.conversationRepository.save(conversation);
     }
 

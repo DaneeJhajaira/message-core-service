@@ -64,18 +64,29 @@ export class RegisterPendingOutboundMessageUseCase {
       where: { externalId: event.recipient.waId },
     });
 
+    const messagePreview =
+      event.content.text?.body ?? event.content.media?.caption ?? null;
+
     if (!conversation) {
       conversation = this.conversationRepository.create({
         contactId: contact.id,
         externalId: event.recipient.waId,
         status: 'open',
         lastMessageAt: messageDate,
+        lastMessageId: `pending:${event.eventId}`,
+        lastMessagePreview: messagePreview,
+        lastMessageType: event.message.type,
+        lastMessageDirection: 'outbound',
       });
 
       conversation = await this.conversationRepository.save(conversation);
     } else {
       conversation.contactId = contact.id;
       conversation.lastMessageAt = messageDate;
+      conversation.lastMessageId = `pending:${event.eventId}`;
+      conversation.lastMessagePreview = messagePreview;
+      conversation.lastMessageType = event.message.type;
+      conversation.lastMessageDirection = 'outbound';
       conversation = await this.conversationRepository.save(conversation);
     }
 

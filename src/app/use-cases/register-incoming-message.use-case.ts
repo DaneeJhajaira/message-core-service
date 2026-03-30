@@ -64,18 +64,31 @@ export class RegisterIncomingMessageUseCase {
       where: { externalId: event.conversation.externalId },
     });
 
+    const messagePreview =
+      event.content.text?.body ?? event.content.media?.caption ?? null;
+
     if (!conversation) {
       conversation = this.conversationRepository.create({
         contactId: contact.id,
         externalId: event.conversation.externalId,
         status: 'open',
         lastMessageAt: messageDate,
+        lastMessageId: event.message.messageId,
+        lastMessagePreview: messagePreview,
+        lastMessageType: event.message.type,
+        lastMessageDirection: event.message.direction,
+        unreadCount: 1,
       });
 
       conversation = await this.conversationRepository.save(conversation);
     } else {
       conversation.contactId = contact.id;
       conversation.lastMessageAt = messageDate;
+      conversation.lastMessageId = event.message.messageId;
+      conversation.lastMessagePreview = messagePreview;
+      conversation.lastMessageType = event.message.type;
+      conversation.lastMessageDirection = event.message.direction;
+      conversation.unreadCount = (conversation.unreadCount ?? 0) + 1;
 
       conversation = await this.conversationRepository.save(conversation);
     }
