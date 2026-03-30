@@ -21,6 +21,8 @@ import { ConversationsController } from './controllers/conversations.controller'
 import { GetConversationsUseCase } from '../app/use-cases/get-conversations.use-case';
 import { GetConversationMessagesUseCase } from '../app/use-cases/get-conversation-messages.use-case';
 import { ChatEventsPublisher } from './services/chat-events.publisher';
+import { ConversationAccessController } from './controllers/conversation-access.controller';
+import { CheckConversationAccessUseCase } from 'src/app/use-cases/check-conversation-access.use-case';
 
 @Module({
   imports: [
@@ -39,6 +41,7 @@ import { ChatEventsPublisher } from './services/chat-events.publisher';
     WhatsappMessageSendConsumer,
     WhatsappMessageStatusConsumer,
     ConversationsController,
+    ConversationAccessController,
   ],
   providers: [
     RegisterIncomingMessageUseCase,
@@ -51,6 +54,8 @@ import { ChatEventsPublisher } from './services/chat-events.publisher';
     GetConversationsUseCase,
     GetConversationMessagesUseCase,
     ChatEventsPublisher,
+    CheckConversationAccessUseCase,
+
   ],
 })
 export class MessageCoreModule {}
