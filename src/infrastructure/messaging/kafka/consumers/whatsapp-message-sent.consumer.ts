@@ -1,5 +1,10 @@
 import { Controller, Logger } from '@nestjs/common';
-import { Ctx, EventPattern, KafkaContext, Payload } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  KafkaContext,
+  Payload,
+} from '@nestjs/microservices';
 import type { WhatsappMessageSentEvent } from '../../../../shared/contracts/whatsapp-message-sent.contract';
 import { RegisterSentOutboundMessageUseCase } from '../../../../app/use-cases/register-sent-outbound-message.use-case';
 

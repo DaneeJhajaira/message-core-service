@@ -26,7 +26,10 @@ export class ContactOrmEntity {
   @Column({ name: 'last_message_at', type: 'timestamp', nullable: true })
   lastMessageAt: Date | null;
 
-  @OneToMany(() => ConversationOrmEntity, (conversation) => conversation.contact)
+  @OneToMany(
+    () => ConversationOrmEntity,
+    (conversation) => conversation.contact,
+  )
   conversations: ConversationOrmEntity[];
 
   @OneToMany(() => MessageOrmEntity, (message) => message.contact)

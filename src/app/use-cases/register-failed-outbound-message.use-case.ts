@@ -10,7 +10,9 @@ import { toChatMessageUpdatedEvent } from '../../message-core/mappers/chat-event
 
 @Injectable()
 export class RegisterFailedOutboundMessageUseCase {
-  private readonly logger = new Logger(RegisterFailedOutboundMessageUseCase.name);
+  private readonly logger = new Logger(
+    RegisterFailedOutboundMessageUseCase.name,
+  );
 
   constructor(
     @InjectRepository(ContactOrmEntity)

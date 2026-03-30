@@ -10,7 +10,9 @@ import { toChatMessageUpdatedEvent } from '../../message-core/mappers/chat-event
 
 @Injectable()
 export class UpdateMessageFromStatusEventUseCase {
-  private readonly logger = new Logger(UpdateMessageFromStatusEventUseCase.name);
+  private readonly logger = new Logger(
+    UpdateMessageFromStatusEventUseCase.name,
+  );
 
   constructor(
     @InjectRepository(MessageOrmEntity)

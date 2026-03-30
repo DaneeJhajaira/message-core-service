@@ -110,7 +110,5 @@ export class RegisterIncomingMessageUseCase {
     );
 
     this.logger.log(`Mensaje registrado: ${event.message.messageId}`);
-
-
   }
 }

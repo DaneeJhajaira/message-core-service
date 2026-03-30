@@ -1,5 +1,10 @@
 import { Controller, Logger } from '@nestjs/common';
-import { Ctx, EventPattern, KafkaContext, Payload } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  KafkaContext,
+  Payload,
+} from '@nestjs/microservices';
 import type { MediaAssetProcessedEvent } from '../../../../shared/contracts/media-asset-processed.contract';
 import { UpdateMessageMediaFromProcessedEventUseCase } from '../../../../app/use-cases/update-message-media-from-processed-event.use-case';
 

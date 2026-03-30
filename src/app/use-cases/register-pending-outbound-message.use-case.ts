@@ -10,7 +10,9 @@ import { toChatMessageCreatedEvent } from 'src/message-core/mappers/chat-events.
 
 @Injectable()
 export class RegisterPendingOutboundMessageUseCase {
-  private readonly logger = new Logger(RegisterPendingOutboundMessageUseCase.name);
+  private readonly logger = new Logger(
+    RegisterPendingOutboundMessageUseCase.name,
+  );
 
   constructor(
     @InjectRepository(ContactOrmEntity)
@@ -84,10 +86,7 @@ export class RegisterPendingOutboundMessageUseCase {
       originalEventId: event.eventId,
       direction: 'outbound',
       messageType: event.message.type,
-      body:
-        event.content.text?.body ??
-        event.content.media?.caption ??
-        null,
+      body: event.content.text?.body ?? event.content.media?.caption ?? null,
       providerName: event.provider,
       providerPhoneNumberId: null,
       agentId: event.metadata?.agentId ?? null,
