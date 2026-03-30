@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ConversationOrmEntity } from './conversation.orm-entity';
+import { MessageOrmEntity } from './message.orm-entity';
 
 @Entity({ name: 'contacts' })
 export class ContactOrmEntity {
@@ -22,6 +25,12 @@ export class ContactOrmEntity {
 
   @Column({ name: 'last_message_at', type: 'timestamp', nullable: true })
   lastMessageAt: Date | null;
+
+  @OneToMany(() => ConversationOrmEntity, (conversation) => conversation.contact)
+  conversations: ConversationOrmEntity[];
+
+  @OneToMany(() => MessageOrmEntity, (message) => message.contact)
+  messages: MessageOrmEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

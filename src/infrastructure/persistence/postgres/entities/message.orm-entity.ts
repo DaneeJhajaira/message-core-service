@@ -2,10 +2,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ContactOrmEntity } from './contact.orm-entity';
+import { ConversationOrmEntity } from './conversation.orm-entity';
 
+@Index('idx_messages_conversation_timestamp', ['conversationId', 'messageTimestamp'])
+@Index('idx_messages_original_event_id', ['originalEventId'])
 @Entity({ name: 'messages' })
 export class MessageOrmEntity {
   @PrimaryGeneratedColumn()
@@ -14,8 +21,20 @@ export class MessageOrmEntity {
   @Column({ name: 'conversation_id', type: 'int' })
   conversationId: number;
 
+  @ManyToOne(() => ConversationOrmEntity, (conversation) => conversation.messages, {
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'conversation_id' })
+  conversation: ConversationOrmEntity;
+
   @Column({ name: 'contact_id', type: 'int' })
   contactId: number;
+
+  @ManyToOne(() => ContactOrmEntity, (contact) => contact.messages, {
+    onDelete: 'RESTRICT',
+  })
+  @JoinColumn({ name: 'contact_id' })
+  contact: ContactOrmEntity;
 
   @Column({ name: 'message_id', type: 'varchar', length: 255, unique: true })
   messageId: string;
