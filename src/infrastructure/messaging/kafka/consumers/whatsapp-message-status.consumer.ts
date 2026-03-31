@@ -21,10 +21,21 @@ export class WhatsappMessageStatusConsumer {
     @Payload() payload: WhatsappMessageStatusEvent,
     @Ctx() context: KafkaContext,
   ) {
+    const topic = context.getTopic();
+    const partition = context.getPartition();
+    const offset = context.getMessage().offset;
+
     this.logger.log(
-      `Evento ${context.getTopic()} recibido wamid=${payload?.message?.messageId} status=${payload?.message?.status}`,
+      `Evento ${topic} recibido wamid=${payload?.message?.messageId} status=${payload?.message?.status}`,
     );
 
-    await this.updateMessageFromStatusEventUseCase.execute(payload);
+    try {
+      await this.updateMessageFromStatusEventUseCase.execute(payload);
+    } catch (error) {
+      this.logger.error(
+        `Error procesando mensaje topic=${topic} partition=${partition} offset=${offset}: ${error.message}`,
+        error.stack,
+      );
+    }
   }
 }

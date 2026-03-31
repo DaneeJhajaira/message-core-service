@@ -21,10 +21,21 @@ export class MediaAssetProcessedConsumer {
     @Payload() payload: MediaAssetProcessedEvent,
     @Ctx() context: KafkaContext,
   ) {
+    const topic = context.getTopic();
+    const partition = context.getPartition();
+    const offset = context.getMessage().offset;
+
     this.logger.log(
-      `Evento media.asset.processed recibido topic=${context.getTopic()} messageId=${payload?.mediaJob?.messageId}`,
+      `Evento media.asset.processed recibido topic=${topic} messageId=${payload?.mediaJob?.messageId}`,
     );
 
-    await this.updateMessageMediaFromProcessedEventUseCase.execute(payload);
+    try {
+      await this.updateMessageMediaFromProcessedEventUseCase.execute(payload);
+    } catch (error) {
+      this.logger.error(
+        `Error procesando mensaje topic=${topic} partition=${partition} offset=${offset}: ${error.message}`,
+        error.stack,
+      );
+    }
   }
 }

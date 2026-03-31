@@ -64,8 +64,12 @@ export class RegisterPendingOutboundMessageUseCase {
       where: { externalId: event.recipient.waId },
     });
 
-    const messagePreview =
+    const rawPreview =
       event.content.text?.body ?? event.content.media?.caption ?? null;
+    const messagePreview =
+      rawPreview && rawPreview.length > 500
+        ? rawPreview.slice(0, 497) + '...'
+        : rawPreview;
 
     if (!conversation) {
       conversation = this.conversationRepository.create({

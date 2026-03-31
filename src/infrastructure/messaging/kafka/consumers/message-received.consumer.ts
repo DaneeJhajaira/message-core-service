@@ -23,11 +23,19 @@ export class MessageReceivedConsumer {
   ) {
     const topic = context.getTopic();
     const partition = context.getPartition();
+    const offset = context.getMessage().offset;
 
     this.logger.log(
       `Evento recibido topic=${topic} partition=${partition} messageId=${payload?.message?.messageId}`,
     );
 
-    await this.registerIncomingMessageUseCase.execute(payload);
+    try {
+      await this.registerIncomingMessageUseCase.execute(payload);
+    } catch (error) {
+      this.logger.error(
+        `Error procesando mensaje topic=${topic} partition=${partition} offset=${offset}: ${error.message}`,
+        error.stack,
+      );
+    }
   }
 }

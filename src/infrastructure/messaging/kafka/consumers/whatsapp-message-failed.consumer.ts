@@ -21,10 +21,21 @@ export class WhatsappMessageFailedConsumer {
     @Payload() payload: WhatsappMessageFailedEvent,
     @Ctx() context: KafkaContext,
   ) {
+    const topic = context.getTopic();
+    const partition = context.getPartition();
+    const offset = context.getMessage().offset;
+
     this.logger.log(
-      `Evento ${context.getTopic()} recibido originalEventId=${payload.originalEventId}`,
+      `Evento ${topic} recibido originalEventId=${payload.originalEventId}`,
     );
 
-    await this.registerFailedOutboundMessageUseCase.execute(payload);
+    try {
+      await this.registerFailedOutboundMessageUseCase.execute(payload);
+    } catch (error) {
+      this.logger.error(
+        `Error procesando mensaje topic=${topic} partition=${partition} offset=${offset}: ${error.message}`,
+        error.stack,
+      );
+    }
   }
 }
