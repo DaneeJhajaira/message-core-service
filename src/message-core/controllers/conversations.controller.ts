@@ -21,6 +21,11 @@ export class ConversationsController {
       externalId: item.externalId,
       status: item.status,
       lastMessageAt: item.lastMessageAt,
+      lastMessageId: item.lastMessageId,
+      lastMessagePreview: item.lastMessagePreview,
+      lastMessageType: item.lastMessageType,
+      lastMessageDirection: item.lastMessageDirection,
+      unreadCount: item.unreadCount,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     }));
