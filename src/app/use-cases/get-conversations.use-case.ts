@@ -10,12 +10,19 @@ export class GetConversationsUseCase {
     private readonly conversationRepository: Repository<ConversationOrmEntity>,
   ) {}
 
-  async execute(): Promise<ConversationOrmEntity[]> {
-    return this.conversationRepository.find({
+  async execute(params: {
+    limit: number;
+    offset: number;
+  }): Promise<{ data: ConversationOrmEntity[]; total: number }> {
+    const [data, total] = await this.conversationRepository.findAndCount({
       order: {
         lastMessageAt: 'DESC',
         updatedAt: 'DESC',
       },
+      take: params.limit,
+      skip: params.offset,
     });
+
+    return { data, total };
   }
 }
