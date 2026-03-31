@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "engines": {
-    "node": "22.x"
+    "node": ">=22"
   },
   "scripts": {
     "build": "nest build",
@@ -16,9 +16,9 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "migration:generate": "typeorm-ts-node-esm -d src/infrastructure/persistence/postgres/typeorm.datasource.ts migration:generate src/infrastructure/persistence/postgres/migrations/InitSchema",
-    "migration:run": "typeorm-ts-node-esm -d src/infrastructure/persistence/postgres/typeorm.datasource.ts migration:run",
-    "migration:revert": "typeorm-ts-node-esm -d src/infrastructure/persistence/postgres/typeorm.datasource.ts migration:revert",
+    "migration:generate": "nest build && npx typeorm migration:generate -d dist/infrastructure/persistence/postgres/typeorm.datasource.js",
+    "migration:run": "nest build && npx typeorm migration:run -d dist/infrastructure/persistence/postgres/typeorm.datasource.js",
+    "migration:revert": "nest build && npx typeorm migration:revert -d dist/infrastructure/persistence/postgres/typeorm.datasource.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -60,7 +60,6 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typeorm-ts-node-esm": "^0.3.20",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },

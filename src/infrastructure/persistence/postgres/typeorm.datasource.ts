@@ -12,6 +12,6 @@ export default new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [ContactOrmEntity, ConversationOrmEntity, MessageOrmEntity],
-  migrations: ['src/infrastructure/persistence/postgres/migrations/*.ts'],
+  migrations: ['dist/infrastructure/persistence/postgres/migrations/*.js'],
   synchronize: false,
 });
