@@ -16,7 +16,10 @@ export class CheckConversationAccessUseCase {
     const conversation = await this.conversationRepository.findOne({
       where: { externalId: params.conversationExternalId },
     });
-
+    console.log(`Check access for conversation with externalId=${params.conversationExternalId}: ${
+      conversation ? 'ALLOWED' : 'DENIED'
+    }`);
+    console.log('Existing conversations in DB:', conversation);
     return {
       allowed: !!conversation,
     };
