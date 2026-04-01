@@ -18,6 +18,7 @@ export function toChatMessageCreatedEvent(params: {
     occurredAt: new Date().toISOString(),
     conversation: {
       externalId: conversation.externalId,
+      unreadCount: conversation.unreadCount ?? 0,
     },
     message: {
       messageId: message.messageId,
@@ -50,6 +51,7 @@ export function toChatMessageUpdatedEvent(params: {
     occurredAt: new Date().toISOString(),
     conversation: {
       externalId: conversation.externalId,
+      unreadCount: conversation.unreadCount ?? 0,
     },
     message: {
       messageId: message.messageId,

@@ -5,6 +5,7 @@ export interface ChatMessageUpdatedEvent {
 
   conversation: {
     externalId: string;
+    unreadCount: number;
   };
 
   message: {
