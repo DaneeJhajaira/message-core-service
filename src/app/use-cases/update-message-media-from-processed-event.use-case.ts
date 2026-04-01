@@ -39,6 +39,7 @@ export class UpdateMessageMediaFromProcessedEventUseCase {
       return;
     }
 
+    message.mediaAssetId = event.mediaJob.id;
     message.providerMediaId = event.mediaJob.providerMediaId;
     message.mediaStatus = event.mediaJob.status;
     message.mediaUrl = event.storage.publicUrl;
