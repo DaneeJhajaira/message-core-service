@@ -17,6 +17,4 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 3000
-
-CMD ["sh", "-c", "npx typeorm migration:run -d dist/infrastructure/persistence/postgres/typeorm.datasource.js && node dist/main"]
+CMD ["sh", "-c", "node node_modules/typeorm/cli.js migration:run -d dist/infrastructure/persistence/postgres/typeorm.datasource.js && node dist/main"]
