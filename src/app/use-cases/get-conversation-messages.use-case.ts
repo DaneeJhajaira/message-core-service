@@ -39,7 +39,7 @@ export class GetConversationMessagesUseCase {
 
     if (params.cursor) {
       qb.andWhere(
-        '(m.message_timestamp, m.id) > (:cursorTs, :cursorId)',
+        '(m.message_timestamp, m.id) < (:cursorTs, :cursorId)',
         { cursorTs: params.cursor.timestamp, cursorId: params.cursor.id },
       );
     }
@@ -49,8 +49,8 @@ export class GetConversationMessagesUseCase {
     });
 
     const data = await qb
-      .orderBy('m.message_timestamp', 'ASC')
-      .addOrderBy('m.id', 'ASC')
+      .orderBy('m.message_timestamp', 'DESC')
+      .addOrderBy('m.id', 'DESC')
       .take(params.limit + 1)
       .getMany();
 
@@ -58,6 +58,8 @@ export class GetConversationMessagesUseCase {
     if (hasMore) {
       data.pop();
     }
+
+    data.reverse();
 
     return { data, total, hasMore };
   }

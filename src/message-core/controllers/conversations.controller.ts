@@ -73,13 +73,13 @@ export class ConversationsController {
         cursor,
       });
 
-    const lastItem = data[data.length - 1];
+    const oldestItem = data[0];
     const nextCursor =
-      hasMore && lastItem
+      hasMore && oldestItem
         ? Buffer.from(
             JSON.stringify({
-              t: lastItem.messageTimestamp.toISOString(),
-              id: lastItem.id,
+              t: oldestItem.messageTimestamp.toISOString(),
+              id: oldestItem.id,
             }),
           ).toString('base64')
         : null;
