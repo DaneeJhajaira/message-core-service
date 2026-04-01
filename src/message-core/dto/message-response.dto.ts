@@ -4,7 +4,7 @@ export class MessageContentDto {
 }
 
 export class MessageMediaDto {
-  url: string | null;
+  assetId: string | null;
   status: string | null;
   mimeType: string | null;
 }

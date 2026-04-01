@@ -95,9 +95,9 @@ export class ConversationsController {
           type: item.messageType,
           body: item.body,
         },
-        media: item.mediaUrl || item.mediaStatus
+        media: item.mediaAssetId || item.mediaStatus
           ? {
-              url: item.mediaUrl,
+              assetId: item.mediaAssetId,
               status: item.mediaStatus,
               mimeType: item.mediaMimeType,
             }
