@@ -61,6 +61,11 @@ export class GetConversationMessagesUseCase {
 
     data.reverse();
 
+    if (!params.cursor && conversation.unreadCount > 0) {
+      conversation.unreadCount = 0;
+      await this.conversationRepository.save(conversation);
+    }
+
     return { data, total, hasMore };
   }
 }
