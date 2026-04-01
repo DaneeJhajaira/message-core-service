@@ -87,31 +87,24 @@ export class ConversationsController {
     return {
       data: data.map((item) => ({
         id: item.id,
-        conversationId: item.conversationId,
-        contactId: item.contactId,
         messageId: item.messageId,
-        originalEventId: item.originalEventId,
-        direction: item.direction,
-        messageType: item.messageType,
-        body: item.body,
-        providerName: item.providerName,
-        providerPhoneNumberId: item.providerPhoneNumberId,
-        agentId: item.agentId,
-        providerMediaId: item.providerMediaId,
-        mediaAssetId: item.mediaAssetId,
-        mediaStatus: item.mediaStatus,
-        mediaUrl: item.mediaUrl,
-        mediaMimeType: item.mediaMimeType,
-        mediaStorageBucket: item.mediaStorageBucket,
-        mediaStorageObjectKey: item.mediaStorageObjectKey,
-        mediaErrorMessage: item.mediaErrorMessage,
-        errorMessage: item.errorMessage,
+        direction: item.direction as 'inbound' | 'outbound',
         status: item.status,
-        deliveredAt: item.deliveredAt,
-        readAt: item.readAt,
-        messageTimestamp: item.messageTimestamp,
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
+        timestamp: item.messageTimestamp,
+        content: {
+          type: item.messageType,
+          body: item.body,
+        },
+        media: item.mediaUrl || item.mediaStatus
+          ? {
+              url: item.mediaUrl,
+              status: item.mediaStatus,
+              mimeType: item.mediaMimeType,
+            }
+          : null,
+        error: item.errorMessage
+          ? { message: item.errorMessage }
+          : null,
       })),
       total,
       limit,
