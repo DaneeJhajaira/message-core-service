@@ -13,6 +13,7 @@ export interface ChatMessageUpdatedEvent {
     type: string;
     status: string;
     body: string | null;
+    mediaAssetId?: string | null;
     mediaStatus?: string | null;
     mediaUrl?: string | null;
     mediaErrorMessage?: string | null;

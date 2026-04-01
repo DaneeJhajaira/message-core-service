@@ -26,6 +26,7 @@ export function toChatMessageCreatedEvent(params: {
       body: message.body,
       status: message.status,
       timestamp: message.messageTimestamp.toISOString(),
+      mediaAssetId: message.mediaAssetId ?? null,
     },
     contact: {
       waId: contact.waId,
@@ -56,6 +57,7 @@ export function toChatMessageUpdatedEvent(params: {
       type: message.messageType,
       status: message.status,
       body: message.body,
+      mediaAssetId: message.mediaAssetId ?? null,
       mediaStatus: message.mediaStatus ?? null,
       mediaUrl: message.mediaUrl ?? null,
       mediaErrorMessage: message.mediaErrorMessage ?? null,

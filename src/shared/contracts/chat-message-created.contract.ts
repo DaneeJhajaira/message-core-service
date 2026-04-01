@@ -14,6 +14,7 @@ export interface ChatMessageCreatedEvent {
     body: string | null;
     status: string;
     timestamp: string;
+    mediaAssetId?: string | null;
   };
 
   contact: {
