@@ -4,8 +4,10 @@ import {
   GetConversationMessagesUseCase,
   MessageCursor,
 } from '../../app/use-cases/get-conversation-messages.use-case';
+import { GetConversationContextUseCase } from '../../app/use-cases/get-conversation-context.use-case';
 import { ConversationResponseDto } from '../dto/conversation-response.dto';
 import { MessageResponseDto } from '../dto/message-response.dto';
+import { ConversationContextResponseDto } from '../dto/conversation-context-response.dto';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import { CursorPaginatedResponseDto } from '../../shared/dto/cursor-paginated-response.dto';
 
@@ -14,6 +16,7 @@ export class ConversationsController {
   constructor(
     private readonly getConversationsUseCase: GetConversationsUseCase,
     private readonly getConversationMessagesUseCase: GetConversationMessagesUseCase,
+    private readonly getConversationContextUseCase: GetConversationContextUseCase,
   ) {}
 
   @Get()
@@ -49,6 +52,13 @@ export class ConversationsController {
       offset,
       hasMore: offset + limit < total,
     };
+  }
+
+  @Get(':externalId/context')
+  async getContext(
+    @Param('externalId') externalId: string,
+  ): Promise<ConversationContextResponseDto> {
+    return this.getConversationContextUseCase.execute(externalId);
   }
 
   @Get(':externalId/messages')

@@ -23,6 +23,7 @@ import { GetConversationMessagesUseCase } from '../app/use-cases/get-conversatio
 import { ChatEventsPublisher } from './services/chat-events.publisher';
 import { ConversationAccessController } from './controllers/conversation-access.controller';
 import { CheckConversationAccessUseCase } from 'src/app/use-cases/check-conversation-access.use-case';
+import { GetConversationContextUseCase } from '../app/use-cases/get-conversation-context.use-case';
 
 @Module({
   imports: [
@@ -55,7 +56,7 @@ import { CheckConversationAccessUseCase } from 'src/app/use-cases/check-conversa
     GetConversationMessagesUseCase,
     ChatEventsPublisher,
     CheckConversationAccessUseCase,
-
+    GetConversationContextUseCase,
   ],
 })
 export class MessageCoreModule {}
