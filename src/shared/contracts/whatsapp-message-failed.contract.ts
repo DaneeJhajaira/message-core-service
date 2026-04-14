@@ -1,3 +1,5 @@
+import { RenderedTemplate } from './rendered-template.types';
+
 export interface WhatsappMessageFailedEvent {
   eventId: string;
   eventType: 'whatsapp.message.failed';
@@ -12,6 +14,13 @@ export interface WhatsappMessageFailedEvent {
   message: {
     type: string;
     status: 'failed';
+  };
+
+  content?: {
+    text?: {
+      body: string;
+    } | null;
+    renderedTemplate?: RenderedTemplate | null;
   };
 
   error: {

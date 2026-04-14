@@ -30,6 +30,7 @@ export class UpdateMessageFromStatusEventUseCase {
   async execute(event: WhatsappMessageStatusEvent): Promise<void> {
     const message = await this.messageRepository.findOne({
       where: { messageId: event.message.messageId },
+      relations: ['messageTemplate'],
     });
 
     if (!message) {

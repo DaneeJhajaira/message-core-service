@@ -6,7 +6,7 @@ import {
 } from '../../app/use-cases/get-conversation-messages.use-case';
 import { GetConversationContextUseCase } from '../../app/use-cases/get-conversation-context.use-case';
 import { ConversationResponseDto } from '../dto/conversation-response.dto';
-import { MessageResponseDto } from '../dto/message-response.dto';
+import { MessageResponseDto, MessageTemplateButtonDto } from '../dto/message-response.dto';
 import { ConversationContextResponseDto } from '../dto/conversation-context-response.dto';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import { CursorPaginatedResponseDto } from '../../shared/dto/cursor-paginated-response.dto';
@@ -104,6 +104,24 @@ export class ConversationsController {
         content: {
           type: item.messageType,
           body: item.body,
+          template: item.messageTemplate
+            ? {
+                name: item.messageTemplate.name,
+                language: item.messageTemplate.language,
+                header: item.messageTemplate.headerType
+                  ? {
+                      type: item.messageTemplate.headerType,
+                      text: item.messageTemplate.headerText ?? undefined,
+                      mediaId: item.messageTemplate.headerMediaId ?? undefined,
+                      mediaUrl: item.messageTemplate.headerMediaUrl ?? undefined,
+                      location: item.messageTemplate.headerLocation ?? undefined,
+                    }
+                  : null,
+                body: item.messageTemplate.body,
+                footer: item.messageTemplate.footer ?? null,
+                buttons: (item.messageTemplate.buttons as MessageTemplateButtonDto[]) ?? null,
+              }
+            : null,
         },
         media: item.mediaAssetId || item.mediaStatus
           ? {

@@ -5,6 +5,7 @@ import { MessageReceivedConsumer } from '../infrastructure/messaging/kafka/consu
 import { ContactOrmEntity } from '../infrastructure/persistence/postgres/entities/contact.orm-entity';
 import { ConversationOrmEntity } from '../infrastructure/persistence/postgres/entities/conversation.orm-entity';
 import { MessageOrmEntity } from '../infrastructure/persistence/postgres/entities/message.orm-entity';
+import { MessageTemplateOrmEntity } from '../infrastructure/persistence/postgres/entities/message-template.orm-entity';
 import { UpdateMessageMediaFromProcessedEventUseCase } from 'src/app/use-cases/update-message-media-from-processed-event.use-case';
 import { MediaAssetProcessedConsumer } from 'src/infrastructure/messaging/kafka/consumers/media-asset-processed.consumer';
 import { UpdateMessageMediaFromFailedEventUseCase } from 'src/app/use-cases/update-message-media-from-failed-event.use-case';
@@ -31,6 +32,7 @@ import { GetConversationContextUseCase } from '../app/use-cases/get-conversation
       ContactOrmEntity,
       ConversationOrmEntity,
       MessageOrmEntity,
+      MessageTemplateOrmEntity,
     ]),
   ],
   controllers: [

@@ -30,6 +30,7 @@ export class UpdateMessageMediaFromProcessedEventUseCase {
   async execute(event: MediaAssetProcessedEvent): Promise<void> {
     const message = await this.messageRepository.findOne({
       where: { messageId: event.mediaJob.messageId },
+      relations: ['messageTemplate'],
     });
 
     if (!message) {

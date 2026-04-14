@@ -2,8 +2,40 @@ import { randomUUID } from 'crypto';
 import { ContactOrmEntity } from '../../infrastructure/persistence/postgres/entities/contact.orm-entity';
 import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres/entities/conversation.orm-entity';
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
+import { MessageTemplateOrmEntity } from '../../infrastructure/persistence/postgres/entities/message-template.orm-entity';
 import { ChatMessageCreatedEvent } from '../../shared/contracts/chat-message-created.contract';
 import { ChatMessageUpdatedEvent } from '../../shared/contracts/chat-message-updated.contract';
+import {
+  RenderedTemplate,
+  RenderedTemplateButton,
+  RenderedTemplateHeader,
+} from '../../shared/contracts/rendered-template.types';
+
+function toRenderedTemplate(
+  tpl: MessageTemplateOrmEntity | null | undefined,
+): RenderedTemplate | null {
+  if (!tpl) return null;
+
+  let header: RenderedTemplateHeader | null = null;
+  if (tpl.headerType) {
+    header = {
+      type: tpl.headerType as RenderedTemplateHeader['type'],
+      text: tpl.headerText ?? undefined,
+      mediaId: tpl.headerMediaId ?? undefined,
+      mediaUrl: tpl.headerMediaUrl ?? undefined,
+      location: (tpl.headerLocation as RenderedTemplateHeader['location']) ?? undefined,
+    };
+  }
+
+  return {
+    name: tpl.name,
+    language: tpl.language,
+    header,
+    body: tpl.body,
+    footer: tpl.footer ?? null,
+    buttons: (tpl.buttons as RenderedTemplateButton[]) ?? null,
+  };
+}
 
 export function toChatMessageCreatedEvent(params: {
   conversation: ConversationOrmEntity;
@@ -28,6 +60,7 @@ export function toChatMessageCreatedEvent(params: {
       status: message.status,
       timestamp: message.messageTimestamp.toISOString(),
       mediaAssetId: message.mediaAssetId ?? null,
+      template: toRenderedTemplate(message.messageTemplate),
     },
     contact: {
       waId: contact.waId,
@@ -67,6 +100,7 @@ export function toChatMessageUpdatedEvent(params: {
       readAt: message.readAt?.toISOString() ?? null,
       errorMessage: message.errorMessage ?? null,
       timestamp: message.messageTimestamp.toISOString(),
+      template: toRenderedTemplate(message.messageTemplate),
     },
     contact: {
       waId: contact.waId,

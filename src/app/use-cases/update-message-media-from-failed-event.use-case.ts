@@ -30,6 +30,7 @@ export class UpdateMessageMediaFromFailedEventUseCase {
   async execute(event: MediaAssetFailedEvent): Promise<void> {
     const message = await this.messageRepository.findOne({
       where: { messageId: event.mediaJob.messageId },
+      relations: ['messageTemplate'],
     });
 
     if (!message) {

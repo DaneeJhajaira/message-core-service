@@ -1,3 +1,5 @@
+import { RenderedTemplate } from './rendered-template.types';
+
 export interface ChatMessageUpdatedEvent {
   eventId: string;
   eventType: 'chat.message.updated';
@@ -22,6 +24,7 @@ export interface ChatMessageUpdatedEvent {
     readAt?: string | null;
     errorMessage?: string | null;
     timestamp: string;
+    template?: RenderedTemplate | null;
   };
 
   contact: {

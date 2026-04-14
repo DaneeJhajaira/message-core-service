@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ContactOrmEntity } from '../../infrastructure/persistence/postgres/entities/contact.orm-entity';
 import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres/entities/conversation.orm-entity';
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
+import { MessageTemplateOrmEntity } from '../../infrastructure/persistence/postgres/entities/message-template.orm-entity';
 import { WhatsappMessageSendEvent } from '../../shared/contracts/whatsapp-message-send.contract';
 import { ChatEventsPublisher } from 'src/message-core/services/chat-events.publisher';
 import { toChatMessageCreatedEvent } from 'src/message-core/mappers/chat-events.mapper';
@@ -23,6 +24,9 @@ export class RegisterPendingOutboundMessageUseCase {
 
     @InjectRepository(MessageOrmEntity)
     private readonly messageRepository: Repository<MessageOrmEntity>,
+
+    @InjectRepository(MessageTemplateOrmEntity)
+    private readonly messageTemplateRepository: Repository<MessageTemplateOrmEntity>,
 
     private readonly chatEventsPublisher: ChatEventsPublisher,
   ) {}
@@ -120,6 +124,34 @@ export class RegisterPendingOutboundMessageUseCase {
     });
 
     await this.messageRepository.save(message);
+
+    let savedTemplate: MessageTemplateOrmEntity | null = null;
+    const rt = event.content.renderedTemplate;
+    if (rt) {
+      try {
+        const templateEntity = this.messageTemplateRepository.create({
+          messageId: message.id,
+          name: rt.name,
+          language: rt.language,
+          headerType: rt.header?.type ?? null,
+          headerText: rt.header?.text ?? null,
+          headerMediaId: rt.header?.mediaId ?? null,
+          headerMediaUrl: rt.header?.mediaUrl ?? null,
+          headerLocation: rt.header?.location ?? null,
+          body: rt.body,
+          footer: rt.footer ?? null,
+          buttons: rt.buttons ?? null,
+        });
+        savedTemplate = await this.messageTemplateRepository.save(templateEntity);
+      } catch (err) {
+        this.logger.error(
+          `Error guardando template para message=${message.id}: ${err.message}`,
+          err.stack,
+        );
+      }
+    }
+
+    message.messageTemplate = savedTemplate;
 
     await this.chatEventsPublisher.publishMessageCreated(
       toChatMessageCreatedEvent({

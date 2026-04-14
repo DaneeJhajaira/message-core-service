@@ -5,6 +5,7 @@ import { MessageCoreModule } from './message-core/message-core.module';
 import { ContactOrmEntity } from './infrastructure/persistence/postgres/entities/contact.orm-entity';
 import { ConversationOrmEntity } from './infrastructure/persistence/postgres/entities/conversation.orm-entity';
 import { MessageOrmEntity } from './infrastructure/persistence/postgres/entities/message.orm-entity';
+import { MessageTemplateOrmEntity } from './infrastructure/persistence/postgres/entities/message-template.orm-entity';
 import { KafkaModule } from './config/kafka.module';
 
 @Module({
@@ -22,7 +23,7 @@ import { KafkaModule } from './config/kafka.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        entities: [ContactOrmEntity, ConversationOrmEntity, MessageOrmEntity],
+        entities: [ContactOrmEntity, ConversationOrmEntity, MessageOrmEntity, MessageTemplateOrmEntity],
         synchronize: false,
       }),
     }),

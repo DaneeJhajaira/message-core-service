@@ -1,3 +1,5 @@
+import { RenderedTemplate } from './rendered-template.types';
+
 export type OutboundMessageType =
   | 'text'
   | 'image'
@@ -32,6 +34,8 @@ export interface WhatsappMessageSendEvent {
       mediaAssetId: string;
       caption?: string | null;
     } | null;
+
+    renderedTemplate?: RenderedTemplate | null;
   };
 
   metadata?: {

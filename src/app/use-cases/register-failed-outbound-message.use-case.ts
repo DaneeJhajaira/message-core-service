@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ContactOrmEntity } from '../../infrastructure/persistence/postgres/entities/contact.orm-entity';
 import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres/entities/conversation.orm-entity';
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
+import { MessageTemplateOrmEntity } from '../../infrastructure/persistence/postgres/entities/message-template.orm-entity';
 import { WhatsappMessageFailedEvent } from '../../shared/contracts/whatsapp-message-failed.contract';
 import { ChatEventsPublisher } from '../../message-core/services/chat-events.publisher';
 import { toChatMessageUpdatedEvent } from '../../message-core/mappers/chat-events.mapper';
@@ -23,6 +24,9 @@ export class RegisterFailedOutboundMessageUseCase {
 
     @InjectRepository(MessageOrmEntity)
     private readonly messageRepository: Repository<MessageOrmEntity>,
+
+    @InjectRepository(MessageTemplateOrmEntity)
+    private readonly messageTemplateRepository: Repository<MessageTemplateOrmEntity>,
 
     private readonly chatEventsPublisher: ChatEventsPublisher,
   ) {}
@@ -75,6 +79,7 @@ export class RegisterFailedOutboundMessageUseCase {
 
     let message = await this.messageRepository.findOne({
       where: { originalEventId: event.originalEventId },
+      relations: ['messageTemplate'],
     });
 
     if (!message) {
@@ -85,7 +90,7 @@ export class RegisterFailedOutboundMessageUseCase {
         originalEventId: event.originalEventId,
         direction: 'outbound',
         messageType: event.message.type,
-        body: null,
+        body: event.content?.text?.body ?? null,
         providerName: 'meta',
         providerPhoneNumberId: null,
         agentId: event.metadata?.agentId ?? null,
@@ -113,6 +118,32 @@ export class RegisterFailedOutboundMessageUseCase {
     }
 
     await this.messageRepository.save(message);
+
+    const rt = event.content?.renderedTemplate;
+    if (rt && !message.messageTemplate) {
+      try {
+        const templateEntity = this.messageTemplateRepository.create({
+          messageId: message.id,
+          name: rt.name,
+          language: rt.language,
+          headerType: rt.header?.type ?? null,
+          headerText: rt.header?.text ?? null,
+          headerMediaId: rt.header?.mediaId ?? null,
+          headerMediaUrl: rt.header?.mediaUrl ?? null,
+          headerLocation: rt.header?.location ?? null,
+          body: rt.body,
+          footer: rt.footer ?? null,
+          buttons: rt.buttons ?? null,
+        });
+        message.messageTemplate =
+          await this.messageTemplateRepository.save(templateEntity);
+      } catch (err) {
+        this.logger.error(
+          `Error guardando template para message=${message.id}: ${err.message}`,
+          err.stack,
+        );
+      }
+    }
 
     await this.chatEventsPublisher.publishMessageUpdated(
       toChatMessageUpdatedEvent({

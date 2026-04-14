@@ -1,3 +1,5 @@
+import { RenderedTemplate } from './rendered-template.types';
+
 export interface ChatMessageCreatedEvent {
   eventId: string;
   eventType: 'chat.message.created';
@@ -16,6 +18,7 @@ export interface ChatMessageCreatedEvent {
     status: string;
     timestamp: string;
     mediaAssetId?: string | null;
+    template?: RenderedTemplate | null;
   };
 
   contact: {

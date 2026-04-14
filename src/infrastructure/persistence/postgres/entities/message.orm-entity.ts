@@ -5,11 +5,13 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ContactOrmEntity } from './contact.orm-entity';
 import { ConversationOrmEntity } from './conversation.orm-entity';
+import { MessageTemplateOrmEntity } from './message-template.orm-entity';
 
 @Index('idx_messages_conversation_timestamp', [
   'conversationId',
@@ -159,6 +161,13 @@ export class MessageOrmEntity {
     nullable: true,
   })
   statusErrorTitle: string | null;
+
+  @OneToOne(
+    () => MessageTemplateOrmEntity,
+    (template) => template.message,
+    { eager: false },
+  )
+  messageTemplate: MessageTemplateOrmEntity | null;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

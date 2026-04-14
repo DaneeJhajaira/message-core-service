@@ -49,6 +49,7 @@ export class GetConversationMessagesUseCase {
     });
 
     const data = await qb
+      .leftJoinAndSelect('m.messageTemplate', 'mt')
       .orderBy('m.message_timestamp', 'DESC')
       .addOrderBy('m.id', 'DESC')
       .take(params.limit + 1)

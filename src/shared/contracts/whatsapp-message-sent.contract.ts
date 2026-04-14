@@ -1,3 +1,5 @@
+import { RenderedTemplate } from './rendered-template.types';
+
 export interface WhatsappMessageSentEvent {
   eventId: string;
   eventType: 'whatsapp.message.sent';
@@ -18,6 +20,13 @@ export interface WhatsappMessageSentEvent {
   message: {
     type: string;
     status: 'sent';
+  };
+
+  content?: {
+    text?: {
+      body: string;
+    } | null;
+    renderedTemplate?: RenderedTemplate | null;
   };
 
   metadata?: {
