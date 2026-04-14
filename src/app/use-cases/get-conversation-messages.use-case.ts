@@ -35,11 +35,11 @@ export class GetConversationMessagesUseCase {
 
     const qb = this.messageRepository
       .createQueryBuilder('m')
-      .where('m.conversation_id = :convId', { convId: conversation.id });
+      .where('m.conversationId = :convId', { convId: conversation.id });
 
     if (params.cursor) {
       qb.andWhere(
-        '(m.message_timestamp, m.id) < (:cursorTs, :cursorId)',
+        '(m.messageTimestamp, m.id) < (:cursorTs, :cursorId)',
         { cursorTs: params.cursor.timestamp, cursorId: params.cursor.id },
       );
     }
@@ -50,7 +50,7 @@ export class GetConversationMessagesUseCase {
 
     const data = await qb
       .leftJoinAndSelect('m.messageTemplate', 'mt')
-      .orderBy('m.message_timestamp', 'DESC')
+      .orderBy('m.messageTimestamp', 'DESC')
       .addOrderBy('m.id', 'DESC')
       .take(params.limit + 1)
       .getMany();
