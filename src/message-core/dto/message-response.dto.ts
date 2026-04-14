@@ -47,4 +47,5 @@ export class MessageResponseDto {
   content: MessageContentDto;
   media: MessageMediaDto | null;
   error: MessageErrorDto | null;
+  agentId: string | null;
 }

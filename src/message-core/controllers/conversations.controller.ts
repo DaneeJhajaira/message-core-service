@@ -133,6 +133,7 @@ export class ConversationsController {
         error: item.errorMessage
           ? { message: item.errorMessage }
           : null,
+        agentId: item.agentId ?? null,
       })),
       total,
       limit,
