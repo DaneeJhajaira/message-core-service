@@ -39,7 +39,7 @@ export class GetConversationMessagesUseCase {
 
     if (params.cursor) {
       qb.andWhere(
-        '(m.messageTimestamp, m.id) < (:cursorTs, :cursorId)',
+        '(m.messageTimestamp < :cursorTs OR (m.messageTimestamp = :cursorTs AND m.id < :cursorId))',
         { cursorTs: params.cursor.timestamp, cursorId: params.cursor.id },
       );
     }
@@ -52,7 +52,7 @@ export class GetConversationMessagesUseCase {
       .leftJoinAndSelect('m.messageTemplate', 'mt')
       .orderBy('m.messageTimestamp', 'DESC')
       .addOrderBy('m.id', 'DESC')
-      .take(params.limit + 1)
+      .limit(params.limit + 1)
       .getMany();
 
     const hasMore = data.length > params.limit;
