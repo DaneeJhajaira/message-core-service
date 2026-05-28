@@ -10,6 +10,10 @@ import {
   RenderedTemplateButton,
   RenderedTemplateHeader,
 } from '../../shared/contracts/rendered-template.types';
+import {
+  isInteractiveReplyMessageType,
+  resolveInboundMessageBody,
+} from '../../shared/utils/resolve-message-body.util';
 
 function toRenderedTemplate(
   tpl: MessageTemplateOrmEntity | null | undefined,
@@ -43,6 +47,11 @@ export function toChatMessageCreatedEvent(params: {
   message: MessageOrmEntity;
 }): ChatMessageCreatedEvent {
   const { conversation, contact, message } = params;
+  const resolvedBody = resolveInboundMessageBody(
+    message.messageType,
+    message.body,
+    message.rawPayload,
+  );
 
   return {
     eventId: randomUUID(),
@@ -56,7 +65,10 @@ export function toChatMessageCreatedEvent(params: {
       messageId: message.messageId,
       direction: message.direction,
       type: message.messageType,
-      body: message.body,
+      body: resolvedBody,
+      ...(isInteractiveReplyMessageType(message.messageType)
+        ? { rawPayload: message.rawPayload }
+        : {}),
       status: message.status,
       timestamp: message.messageTimestamp.toISOString(),
       mediaAssetId: message.mediaAssetId ?? null,
@@ -77,6 +89,11 @@ export function toChatMessageUpdatedEvent(params: {
   message: MessageOrmEntity;
 }): ChatMessageUpdatedEvent {
   const { conversation, contact, message } = params;
+  const resolvedBody = resolveInboundMessageBody(
+    message.messageType,
+    message.body,
+    message.rawPayload,
+  );
 
   return {
     eventId: randomUUID(),
@@ -91,7 +108,10 @@ export function toChatMessageUpdatedEvent(params: {
       direction: message.direction,
       type: message.messageType,
       status: message.status,
-      body: message.body,
+      body: resolvedBody,
+      ...(isInteractiveReplyMessageType(message.messageType)
+        ? { rawPayload: message.rawPayload }
+        : {}),
       mediaAssetId: message.mediaAssetId ?? null,
       mediaStatus: message.mediaStatus ?? null,
       mediaUrl: message.mediaUrl ?? null,

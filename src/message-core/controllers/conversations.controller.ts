@@ -10,6 +10,10 @@ import { MessageResponseDto, MessageTemplateButtonDto } from '../dto/message-res
 import { ConversationContextResponseDto } from '../dto/conversation-context-response.dto';
 import { PaginatedResponseDto } from '../../shared/dto/paginated-response.dto';
 import { CursorPaginatedResponseDto } from '../../shared/dto/cursor-paginated-response.dto';
+import {
+  isInteractiveReplyMessageType,
+  resolveInboundMessageBody,
+} from '../../shared/utils/resolve-message-body.util';
 
 @Controller('conversations')
 export class ConversationsController {
@@ -103,7 +107,14 @@ export class ConversationsController {
         timestamp: item.messageTimestamp,
         content: {
           type: item.messageType,
-          body: item.body,
+          body: resolveInboundMessageBody(
+            item.messageType,
+            item.body,
+            item.rawPayload,
+          ),
+          ...(isInteractiveReplyMessageType(item.messageType)
+            ? { rawPayload: item.rawPayload }
+            : {}),
           template: item.messageTemplate
             ? {
                 name: item.messageTemplate.name,

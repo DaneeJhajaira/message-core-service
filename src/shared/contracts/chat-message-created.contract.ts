@@ -18,6 +18,7 @@ export interface ChatMessageCreatedEvent {
     status: string;
     timestamp: string;
     mediaAssetId?: string | null;
+    rawPayload?: Record<string, unknown> | null;
     template?: RenderedTemplate | null;
   };
 

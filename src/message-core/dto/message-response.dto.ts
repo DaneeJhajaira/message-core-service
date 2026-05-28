@@ -26,6 +26,7 @@ export class MessageContentDto {
   type: string;
   body: string | null;
   template?: MessageTemplateDto | null;
+  rawPayload?: Record<string, unknown> | null;
 }
 
 export class MessageMediaDto {

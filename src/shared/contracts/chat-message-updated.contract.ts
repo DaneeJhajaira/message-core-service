@@ -17,6 +17,7 @@ export interface ChatMessageUpdatedEvent {
     status: string;
     body: string | null;
     mediaAssetId?: string | null;
+    rawPayload?: Record<string, unknown> | null;
     mediaStatus?: string | null;
     mediaUrl?: string | null;
     mediaErrorMessage?: string | null;

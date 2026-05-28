@@ -7,6 +7,7 @@ import { ConversationOrmEntity } from '../../infrastructure/persistence/postgres
 import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/entities/message.orm-entity';
 import { ChatEventsPublisher } from 'src/message-core/services/chat-events.publisher';
 import { toChatMessageCreatedEvent } from 'src/message-core/mappers/chat-events.mapper';
+import { resolveInboundMessageBody } from '../../shared/utils/resolve-message-body.util';
 
 @Injectable()
 export class RegisterIncomingMessageUseCase {
@@ -65,7 +66,11 @@ export class RegisterIncomingMessageUseCase {
     });
 
     const rawPreview =
-      event.content.text?.body ?? event.content.media?.caption ?? null;
+      resolveInboundMessageBody(
+        event.message.type,
+        event.content.text?.body,
+        event.rawPayload,
+      ) ?? event.content.media?.caption ?? null;
     const messagePreview =
       rawPreview && rawPreview.length > 500
         ? rawPreview.slice(0, 497) + '...'
@@ -103,7 +108,11 @@ export class RegisterIncomingMessageUseCase {
       messageId: event.message.messageId,
       direction: event.message.direction,
       messageType: event.message.type,
-      body: event.content.text?.body ?? event.content.media?.caption ?? null,
+      body: resolveInboundMessageBody(
+        event.message.type,
+        event.content.text?.body,
+        event.rawPayload,
+      ) ?? event.content.media?.caption ?? null,
       providerMediaId: event.content.media?.providerMediaId ?? null,
       mediaStatus: event.content.media?.providerMediaId ? 'PENDING' : null,
       mediaUrl: null,
