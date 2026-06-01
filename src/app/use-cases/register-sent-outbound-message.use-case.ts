@@ -7,7 +7,10 @@ import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/enti
 import { MessageTemplateOrmEntity } from '../../infrastructure/persistence/postgres/entities/message-template.orm-entity';
 import { WhatsappMessageSentEvent } from '../../shared/contracts/whatsapp-message-sent.contract';
 import { ChatEventsPublisher } from 'src/message-core/services/chat-events.publisher';
-import { toChatMessageUpdatedEvent } from 'src/message-core/mappers/chat-events.mapper';
+import {
+  toChatMessageCreatedEvent,
+  toChatMessageUpdatedEvent,
+} from 'src/message-core/mappers/chat-events.mapper';
 
 @Injectable()
 export class RegisterSentOutboundMessageUseCase {
@@ -80,6 +83,7 @@ export class RegisterSentOutboundMessageUseCase {
       relations: ['messageTemplate'],
     });
 
+    const isNewMessage = !message;
     const textBody = event.content?.text?.body ?? null;
 
     if (!message) {
@@ -150,16 +154,26 @@ export class RegisterSentOutboundMessageUseCase {
       }
     }
 
-    await this.chatEventsPublisher.publishMessageUpdated(
-      toChatMessageUpdatedEvent({
-        conversation,
-        contact,
-        message,
-      }),
-    );
+    if (isNewMessage) {
+      await this.chatEventsPublisher.publishMessageCreated(
+        toChatMessageCreatedEvent({
+          conversation,
+          contact,
+          message,
+        }),
+      );
+    } else {
+      await this.chatEventsPublisher.publishMessageUpdated(
+        toChatMessageUpdatedEvent({
+          conversation,
+          contact,
+          message,
+        }),
+      );
+    }
 
     this.logger.log(
-      `Mensaje outbound registrado/actualizado como sent: wamid=${event.provider.wamid}`,
+      `Mensaje outbound ${isNewMessage ? 'registrado' : 'actualizado'} como sent: wamid=${event.provider.wamid}`,
     );
   }
 }

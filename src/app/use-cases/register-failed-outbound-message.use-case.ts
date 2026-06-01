@@ -7,7 +7,10 @@ import { MessageOrmEntity } from '../../infrastructure/persistence/postgres/enti
 import { MessageTemplateOrmEntity } from '../../infrastructure/persistence/postgres/entities/message-template.orm-entity';
 import { WhatsappMessageFailedEvent } from '../../shared/contracts/whatsapp-message-failed.contract';
 import { ChatEventsPublisher } from '../../message-core/services/chat-events.publisher';
-import { toChatMessageUpdatedEvent } from '../../message-core/mappers/chat-events.mapper';
+import {
+  toChatMessageCreatedEvent,
+  toChatMessageUpdatedEvent,
+} from '../../message-core/mappers/chat-events.mapper';
 
 @Injectable()
 export class RegisterFailedOutboundMessageUseCase {
@@ -82,6 +85,8 @@ export class RegisterFailedOutboundMessageUseCase {
       relations: ['messageTemplate'],
     });
 
+    const isNewMessage = !message;
+
     if (!message) {
       message = this.messageRepository.create({
         conversationId: conversation.id,
@@ -145,16 +150,26 @@ export class RegisterFailedOutboundMessageUseCase {
       }
     }
 
-    await this.chatEventsPublisher.publishMessageUpdated(
-      toChatMessageUpdatedEvent({
-        conversation,
-        contact,
-        message,
-      }),
-    );
+    if (isNewMessage) {
+      await this.chatEventsPublisher.publishMessageCreated(
+        toChatMessageCreatedEvent({
+          conversation,
+          contact,
+          message,
+        }),
+      );
+    } else {
+      await this.chatEventsPublisher.publishMessageUpdated(
+        toChatMessageUpdatedEvent({
+          conversation,
+          contact,
+          message,
+        }),
+      );
+    }
 
     this.logger.log(
-      `Mensaje outbound registrado/actualizado como failed: originalEventId=${event.originalEventId}`,
+      `Mensaje outbound ${isNewMessage ? 'registrado' : 'actualizado'} como failed: originalEventId=${event.originalEventId}`,
     );
   }
 }
